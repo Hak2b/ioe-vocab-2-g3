@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trò Chơi loại bỏ kí tự thừa (Bộ 2)</title>
+    <title>Trò Chơi Tìm Từ Chính Xác (Bộ 2)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -184,7 +184,6 @@
 
         // --- Âm thanh ---
         const correctSound = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.5 } }).toDestination();
-        // ** CẬP NHẬT: GIẢM ÂM LƯỢNG ÂM THANH "ĐÚNG" **
         correctSound.volume.value = -12; 
         const wrongSound = new Tone.Synth({ oscillator: { type: 'square' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 } }).toDestination();
 
@@ -209,7 +208,6 @@
         // --- Text-to-Speech ---
         function speakWord(word) {
             if ('speechSynthesis' in window) {
-                // Dừng mọi giọng đọc đang phát trước đó để tránh chồng chéo
                 speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(word);
                 utterance.lang = 'en-US';
@@ -295,6 +293,9 @@
                 button.textContent = letterObj.char.toUpperCase();
                 button.dataset.isCorrect = letterObj.isCorrect;
                 button.classList.add('letter-btn', 'w-12', 'h-16', 'text-2xl', 'font-bold', 'bg-white', 'text-teal-600', 'rounded-lg', 'shadow-md', 'border-teal-300');
+                if (letterObj.char === ' ' || letterObj.char === '-') {
+                    button.style.visibility = 'hidden';
+                }
                 button.onclick = () => handleLetterClick(button);
                 letterButtonsContainer.appendChild(button);
             });
@@ -337,7 +338,7 @@
                     scoreDisplay.textContent = score;
                     letterButtonsContainer.classList.add('correct-word');
                     
-                    hintDisplay.textContent = `Nghĩa là: ${currentWord.vi}`;
+                    hintDisplay.innerHTML = `<span class="font-bold">${currentWord.en}</span>: ${currentWord.vi}`;
 
                     playCorrectSound();
                     setTimeout(() => speakWord(currentWord.en), 400);
@@ -357,12 +358,12 @@
         }
         
         function showHint() {
-            hintDisplay.textContent = `Nghĩa là: ${currentWord.vi}`;
+            hintDisplay.innerHTML = `<span class="font-bold">${currentWord.en}</span>: ${currentWord.vi}`;
         }
         
         function hideHint() {
             if (!letterButtonsContainer.classList.contains('correct-word')) {
-                hintDisplay.textContent = '';
+                hintDisplay.innerHTML = '';
             }
         }
 
